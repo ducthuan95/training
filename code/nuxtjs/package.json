@@ -17,5 +17,7 @@
     "bootstrap-vue": "^2.0.0",
     "nuxt": "^2.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.12.1"
+  }
 }
