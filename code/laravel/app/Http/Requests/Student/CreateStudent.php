@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Student;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class CreateStudent extends FormRequest
 {
@@ -13,7 +14,7 @@ class CreateStudent extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**

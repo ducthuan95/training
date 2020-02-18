@@ -29,20 +29,20 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="item in response">
-            <td>{{item.id}}</td>
-            <td>{{item.code}}</td>
+          <tr v-for="(item, index) in response">
+            <td>{{index+1}}</td>
+            <td><NLink :to="{name:'student-edit-id', param: {id:item.id}}">{{item.code}}</NLink></td>
             <td>{{item.name}}</td>
             <td>{{item.age}}</td>
             <td>
-              <i v-if="item.gender == 1" class="fa fa-mars"></i>
-              <i v-if="item.gender == 0" class="fa fa-venus"></i>
+              <i v-if="item.gender === 1" class="fa fa-mars"></i>
+              <i v-if="item.gender === 0" class="fa fa-venus"></i>
             </td>
             <td>{{item.email}}</td>
             <td>{{item.address}}</td>
             <td>
-              <i class="fa fa-edit text-dark"></i>
-              <a @click="Modal(item.id)"><i class="fa fa-trash text-danger"></i></a>
+              <NLink :to="{name: 'student-edit-id', param:{id: item.id}}"><i class="fa fa-edit text-dark"></i></NLink>
+              <a><i class="fa fa-trash text-danger"></i></a>
             </td>
           </tr>
           </tbody>
@@ -58,26 +58,6 @@
     async asyncData({$axios}) {
       const response = await $axios.$get('api/student')
       return {response}
-    },
-    methods: {
-      Modal(id) {
-        this.$bvModal.msgBoxConfirm('Are you sure?')
-          .then(value => {
-            if (value) {
-              this.deleteStudent(id)
-            }
-          })
-          .catch(err => {
-          })
-      },
-      deleteStudent() {
-        axios.$delete('api/student/${this.id}').then(res => {
-          this.message = 'Delete student success.';
-        })
-          .catch((err) => {
-            console.log(err)
-          })
-      }
     },
     data() {
       return {

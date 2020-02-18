@@ -1,16 +1,14 @@
 <template>
   <div>
-    <h2>Create Student</h2>
-    <div>
-      <form @submit="checkForm">
+    <h2>Edit student </h2>
+      <form>
         <div class="form-group">
           <label>Student code <small class="text-danger">*</small></label>
-          <input v-model="student.code"
-                 type="text" class="form-control">
+          <input v-model="student.code" readonly type="text" class="form-control">
         </div>
         <div class="form-group">
           <label>Name <small class="text-danger">*</small></label>
-          <input v-model="student.name" name="name" id="name" type="text" class="form-control">
+          <input v-model="student.name" type="text" class="form-control">
 
         </div>
         <div class="form-group">
@@ -41,41 +39,41 @@
         <NLink class="btn btn-outline-primary" :to="{name: 'student'}">
           <i class="fa fa-chevron-left"></i> Back
         </NLink>
-        <button type="button" class="btn btn-primary" @click="addStudent">
+        <button type="button" class="btn btn-primary" @click="editStudent">
           <i class="fa fa-save"></i> Save
         </button>
       </form>
-    </div>
   </div>
 </template>
 
 <script>
-
-  export default {
-    data() {
-      return {
-        errors: [],
-        student: {},
-      }
-    },
-    methods: {
-      async addStudent() {
-        await this.$axios.$post('api/student', this.student).then((data) => {
-          this.$router.push({name: 'student', params: {message: 'Create student success.'}})
-        }).catch((error) => {
-
-        });
-      },
-      checkForm() {
-        this.errors = [];
-
-        if (!this.name) {
-          this.errors.push("Name required.");
+    export default {
+      data() {
+        return {
+          student: {
+            code: '',
+            name: '',
+            email: '',
+            address: '',
+            age: '',
+            gender: ''
+          },
         }
-      }
+      },
+      methods: {
+        async editStudent() {
+          await this.$axios.$put('api/student/${this.student.id}', this.student).then((data) => {
+            this.$router.push({name: 'student', params: {message: 'Edit student success.'}})
+          }).catch((error) => {
+
+          });
+        }
+      },
+      name: "_id",
+
     }
-  }
 </script>
 
 <style scoped>
+
 </style>

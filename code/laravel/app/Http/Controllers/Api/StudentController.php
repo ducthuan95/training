@@ -26,7 +26,7 @@ class StudentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateStudent $createStudent)
+    public function store(Request $createStudent)
     {
         return Student::create($createStudent->all());
     }
