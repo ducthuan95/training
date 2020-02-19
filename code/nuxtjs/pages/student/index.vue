@@ -29,9 +29,11 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="(item, index) in response">
+          <tr v-for="(item, index) in students">
             <td>{{index+1}}</td>
-            <td><NLink :to="{name:'student-edit-id', param: {id:item.id}}">{{item.code}}</NLink></td>
+            <td>
+              <NLink :to="{name:'student-edit-id', params: {id:item.id}}">{{item.code}}</NLink>
+            </td>
             <td>{{item.name}}</td>
             <td>{{item.age}}</td>
             <td>
@@ -41,8 +43,8 @@
             <td>{{item.email}}</td>
             <td>{{item.address}}</td>
             <td>
-              <NLink :to="{name: 'student-edit-id', param:{id: item.id}}"><i class="fa fa-edit text-dark"></i></NLink>
-              <a><i class="fa fa-trash text-danger"></i></a>
+              <NLink :to="{name: 'student-edit-id', params: {id: item.id}}"><i class="fa fa-edit text-dark"></i></NLink>
+              <a @click="deleteS(item.id)"><i class="fa fa-trash text-danger"></i></a>
             </td>
           </tr>
           </tbody>
@@ -54,17 +56,38 @@
 </template>
 
 <script>
+
   export default {
-    async asyncData({$axios}) {
-      const response = await $axios.$get('api/student')
-      return {response}
-    },
+    name: "index",
     data() {
       return {
-        response: {},
+        students: [],
       }
+    },
+    async asyncData({$axios}) {
+      const students = await $axios.$get('api/student')
+      return {students}
+    },
+    methods: {
+      deleteS(id) {
+        this.$bvModal.msgBoxConfirm('Are you sure?')
+          .then(value => {
+            if (value) {
+              this.deleteStudent(id)
+            }
+          })
+          .catch(err => {
+          })
+      },
+      async deleteStudent(id) {
+        await this.$axios.$delete(`api/student/${id}`).then(response => {
+          location.reload()
+        }).catch(error => {
+        })
+      },
     }
   }
+
 </script>
 
 <style scoped>

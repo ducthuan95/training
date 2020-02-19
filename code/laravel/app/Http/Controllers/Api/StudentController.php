@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Student\CreateStudent;
 use App\Student;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class StudentController extends Controller
 {
@@ -23,18 +24,31 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $createStudent)
+    public function store(Request $request)
     {
-        return Student::create($createStudent->all());
+        try {
+            $this->validate($request, [
+                'code' => 'required',
+                'name' => 'required',
+                'email' => 'required|email',
+                'age' => 'required',
+                'address' => 'required',
+                'gender' => 'required'
+            ]);
+            return Student::create($request->all());
+        } catch (ValidationException $e) {
+            return $e->errors();
+        }
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -45,23 +59,23 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        return Student::where('id','=', $id)->update($request->all());
+        return Student::where('id', '=', $id)->update($request->all());
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        return  Student::where('id', '=', $id)->delete();
+        return Student::where('id', '=', $id)->delete();
     }
 }
