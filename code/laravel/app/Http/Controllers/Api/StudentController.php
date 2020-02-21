@@ -15,10 +15,15 @@ class StudentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    protected $student;
+    public function __construct(Student $student)
+    {
+        $this->student = $student;
+    }
+
     public function index()
     {
-        $data = Student::all();
-        return $data;
+        return $this->student->getAllStudent(10);
     }
 
     /**
@@ -27,22 +32,9 @@ class StudentController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateStudent $re)
     {
-        try {
-            $this->validate($request, [
-                'code' => 'required',
-                'name' => 'required',
-                'email' => 'required|email',
-                'age' => 'required',
-                'address' => 'required',
-                'gender' => 'required'
-            ]);
-            return Student::create($request->all());
-        } catch (ValidationException $e) {
-            return $e->errors();
-        }
-
+        return $this->student->createStudent($re);
     }
 
     /**
@@ -53,7 +45,7 @@ class StudentController extends Controller
      */
     public function show($id)
     {
-        return Student::find($id);
+        return $this->student->getById($id);
     }
 
     /**
@@ -65,6 +57,7 @@ class StudentController extends Controller
      */
     public function update(Request $request, $id)
     {
+
         return Student::where('id', '=', $id)->update($request->all());
     }
 
@@ -76,6 +69,6 @@ class StudentController extends Controller
      */
     public function destroy($id)
     {
-        return Student::where('id', '=', $id)->delete();
+        return $this->student->deleteById($id);
     }
 }

@@ -15,6 +15,7 @@
         </div>
       </div>
       <div>
+        <b-alert v-if="message.length" show variant="success">{{message}}</b-alert>
         <table class="table table-striped dataTable">
           <thead>
           <tr>
@@ -30,7 +31,7 @@
           </thead>
           <tbody>
           <tr v-for="(item, index) in students">
-            <td>{{index+1}}</td>
+            <td>{{(currentPage - 1) * perPage + index + 1}}</td>
             <td>
               <NLink :to="{name:'student-edit-id', params: {id:item.id}}">{{item.code}}</NLink>
             </td>
@@ -49,6 +50,25 @@
           </tr>
           </tbody>
         </table>
+        <div class="text-center">
+          <div class="pr-3 d-inline">
+            Page: <strong>{{currentPage}}</strong>/{{totalPage}}
+          </div>
+          <button
+            :class="{'disabled': currentPage <= 1}"
+            class="btn btn-outline-info mr-3"
+            @click="prevPage"
+          >
+            Prev
+          </button>
+          <button
+            :class="{'disabled': currentPage >= totalPage}"
+            class="btn btn-outline-info"
+            @click="nextPage"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -56,19 +76,59 @@
 </template>
 
 <script>
-
   export default {
     name: "index",
     data() {
       return {
         students: [],
+        currentPage: 1,
+        totalPage: 1,
+        perPage: 10,
+        tmpPage: 0,
+        //loadDataDone: false,
+        message: ''
       }
     },
-    async asyncData({$axios}) {
-      const students = await $axios.$get('api/student')
-      return {students}
+    async asyncData({$axios, route }) {
+      let page = route.query.page == undefined ? 1 : route.query.page
+      let message = route.params.message == undefined ? '' : route.params.message
+      const data = await $axios.$get(`api/student?page=${page}`)
+      return {
+        students: data.data,
+        currentPage: data.current_page,
+        tmpPage: data.current_page,
+        totalPage: data.last_page,
+        perPage: data.per_page,
+        message: message
+      }
     },
     methods: {
+      async loadData(page) {
+        const data = await this.$axios.$get(`api/student?page=${this.tmpPage}`)
+        this.students = data.data
+        if (this.students.length == 0) {
+          return this.$router.push({name: 'student'})
+        }
+        this.currentPage = data.current_page,
+          this.tmpPage = data.current_page
+        this.totalPage = data.last_page
+        this.perPage = data.per_page
+        await this.$router.push({name: 'student', query: {page: this.tmpPage}})
+      },
+      nextPage() {
+        if (this.currentPage >= this.totalPage) {
+          return;
+        }
+        this.tmpPage++;
+        this.loadData(this.tmpPage);
+      },
+      prevPage() {
+        if (this.currentPage <= 1) {
+          return;
+        }
+        this.tmpPage--;
+        this.loadData(this.tmpPage);
+      },
       deleteS(id) {
         this.$bvModal.msgBoxConfirm('Are you sure?')
           .then(value => {
@@ -76,14 +136,11 @@
               this.deleteStudent(id)
             }
           })
-          .catch(err => {
-          })
       },
       async deleteStudent(id) {
-        await this.$axios.$delete(`api/student/${id}`).then(response => {
-          location.reload()
-        }).catch(error => {
-        })
+        await this.$axios.$delete(`api/student/${id}`)
+        this.message = 'Delete student success.';
+        location.reload()
       },
     }
   }
