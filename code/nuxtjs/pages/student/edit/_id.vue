@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Edit student </h2>
+    <h2>Edit student: <span id="span">{{student.name}}</span></h2>
     <form>
       <div class="form-group">
         <label>Student code <small class="text-danger">*</small></label>
@@ -51,9 +51,10 @@
 </template>
 
 <script>
+
   export default {
     async asyncData({$axios, route}) {
-      let id = route.params.id == 0 ? '' : route.params.id
+      const id = route.params.id == 0 ? '' : route.params.id
       const student = await $axios.$get(`api/student/${id}`)
       return {student}
     },
@@ -75,7 +76,7 @@
           gender: '',
           address: '',
           email: ''
-        },
+        }
       }
     },
 
@@ -87,12 +88,8 @@
         Object.keys(this.errors).forEach(key => {
           this.$set(this.errors, key, '')
         })
-        Object.keys(this.student).forEach(key => {
-          this.$set(this.student, key, this.student[key].toString().trim())
-        })
 
         //check student code
-        console.log(this.student.code.indexOf( ''))
         if (this.student.code.length == 0) {
           this.errors.code = 'The code field is required.'
         }else if (this.student.code.length >= 255) {
@@ -117,8 +114,10 @@
 
         if (this.student.address.length == 0) {
           this.errors.address = 'The address field is required'
-        }else if (this.student.email.length >= 255) {
+        }else if (this.student.address.length >= 255) {
           this.errors.address = 'The address may not be greater than 255 characters.'
+        }else if (this.student.address.length <= 6) {
+          this.errors.address = 'The address filed min 6'
         }
 
 
@@ -144,7 +143,6 @@
       },
       async editStudent({$axios, route}) {
         this.validateForm()
-        console.log(this.isError)
         if (this.isError) {
           return
         }
@@ -159,5 +157,7 @@
 </script>
 
 <style scoped>
-
+  #span{
+    color: #4cd213;
+  }
 </style>

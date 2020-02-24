@@ -7,8 +7,14 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
+    private $students;
+    public function __construct(Student $student)
+    {
+        $this->students = $student;
+    }
+
     public function show(){
-        $data['list'] = Student::paginate(10);;
+        $data['list'] = $this->students->getAllStudent(10);
         return view('students.list', $data);
     }
 }

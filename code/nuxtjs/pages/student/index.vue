@@ -15,7 +15,6 @@
         </div>
       </div>
       <div>
-        <b-alert v-if="message.length" show variant="success">{{message}}</b-alert>
         <table class="table table-striped dataTable">
           <thead>
           <tr>
@@ -30,6 +29,9 @@
           </tr>
           </thead>
           <tbody>
+          <tr v-if="students.length == 0">
+            <td colspan="8" class="text-center"><span>Data not found!</span></td>
+          </tr>
           <tr v-for="(item, index) in students">
             <td>{{(currentPage - 1) * perPage + index + 1}}</td>
             <td>
@@ -38,13 +40,14 @@
             <td>{{item.name}}</td>
             <td>{{item.age}}</td>
             <td>
-              <i v-if="item.gender === 1" class="fa fa-mars"></i>
-              <i v-if="item.gender === 0" class="fa fa-venus"></i>
+              <i v-if="item.gender == 1" class="fa fa-mars"></i>
+              <i v-if="item.gender == 0" class="fa fa-venus"></i>
             </td>
             <td>{{item.email}}</td>
             <td>{{item.address}}</td>
             <td>
-              <NLink :to="{name: 'student-edit-id', params: {id: item.id}}"><i class="fa fa-edit text-dark"></i></NLink>
+              <NLink :to="{name: 'student-edit-id', params: {id: item.id}}"><i class="fa fa-edit button-green"></i>
+              </NLink>
               <a @click="deleteS(item.id)"><i class="fa fa-trash text-danger"></i></a>
             </td>
           </tr>
@@ -85,13 +88,13 @@
         totalPage: 1,
         perPage: 10,
         tmpPage: 0,
-        //loadDataDone: false,
-        message: ''
+        last_page: '',
+        current_page: '',
+        per_page: ''
       }
     },
-    async asyncData({$axios, route }) {
-      let page = route.query.page == undefined ? 1 : route.query.page
-      let message = route.params.message == undefined ? '' : route.params.message
+    async asyncData({$axios, route}) {
+      const page = route.query.page == undefined ? 1 : route.query.page
       const data = await $axios.$get(`api/student?page=${page}`)
       return {
         students: data.data,
@@ -99,13 +102,13 @@
         tmpPage: data.current_page,
         totalPage: data.last_page,
         perPage: data.per_page,
-        message: message
       }
     },
     methods: {
-      async loadData(page) {
+      loadData: async function (page) {
         const data = await this.$axios.$get(`api/student?page=${this.tmpPage}`)
         this.students = data.data
+
         if (this.students.length == 0) {
           return this.$router.push({name: 'student'})
         }
@@ -146,7 +149,6 @@
   }
 
 </script>
-
 <style scoped>
 
 </style>

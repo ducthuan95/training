@@ -115,8 +115,11 @@
           this.errors.address = 'The address field is required'
         }else if (this.student.address.length >= 255) {
           this.errors.address = 'The address filed max 255'
+        }else if (this.student.address.length <= 6) {
+          this.errors.address = 'The address filed min 6'
         }
-        const age = this.student.age
+
+
         if (this.student.age.length == 0) {
           this.errors.age = 'The age field is required'
         }else if(this.student.age > 50) {

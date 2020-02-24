@@ -16,19 +16,23 @@ class Student extends Model
 
 
     public function getAllStudent($per = 10){
-        return Student::paginate($per);
+        return $this->orderBy('id', 'DESC')->paginate(10);
     }
 
-    public function getById($id){
-        return Student::find($id);
+    public function getStudentById($id){
+        return $this->find($id);
     }
 
-    public function deleteById($id){
-        return Student::destroy($id);
+    public function deleteStudentById($id){
+        return $this->destroy($id);
     }
 
     public function createStudent(Request $request){
-        return Student::create($request->all());
+        return $this->create($request->all());
     }
-    
+
+    public function updateStudentById($id, Request $request){
+        return $this->where('id', $id)->update($request->all());
+    }
+
 }

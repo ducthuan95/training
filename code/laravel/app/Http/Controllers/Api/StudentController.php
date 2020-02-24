@@ -45,7 +45,7 @@ class StudentController extends Controller
      */
     public function show($id)
     {
-        return $this->student->getById($id);
+        return $this->student->getStudentById($id);
     }
 
     /**
@@ -55,20 +55,19 @@ class StudentController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CreateStudent $request, $id)
     {
-
-        return Student::where('id', '=', $id)->update($request->all());
+        return $this->student->updateStudentById($id,$request);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return int
      */
     public function destroy($id)
     {
-        return $this->student->deleteById($id);
+        return $this->student->deleteStudentById($id);
     }
 }
